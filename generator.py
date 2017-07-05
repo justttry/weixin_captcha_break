@@ -152,7 +152,7 @@ def captcha_generator(width,
                       height, 
                       batch_size=64,
                       set_cha=chars,
-                      font_dir='/sina_captcha_fonts'
+                      font_dir='/home/ubuntu/sina_captcha_fonts'
                       ):
     size_im = (width, height)
     rd_text_poss = [True, True]
@@ -169,7 +169,7 @@ def captcha_generator(width,
             font_paths.append(filepath)
     
     rd_color = ['orange', 'blue', 'green']
-    n_len = 6
+    n_len = 4
     n_class = len(set_cha)
     X = np.zeros((batch_size, height, width, 3), dtype=np.uint8)
     y = [np.zeros((batch_size, n_class), dtype=np.uint8) for i in range(n_len)]    
