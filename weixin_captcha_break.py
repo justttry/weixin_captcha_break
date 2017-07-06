@@ -114,7 +114,7 @@ print '------------------------test0----------------------------'
 print time.ctime()
 
 # 启动任务
-job.send_with_files('http://52.79.127.98:%d'%send_port, ['generator.py'])
+job.send_with_files('http://13.124.171.155:%d'%send_port, ['generator.py'])
 
 print '------------------------test1----------------------------'
 print time.ctime()

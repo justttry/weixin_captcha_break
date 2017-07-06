@@ -21,11 +21,11 @@ I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:193] kernel reported versi
 I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:300] kernel version seems to match DSO: 375.39.0
 Setting default log level to "WARN".
 To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
-17/07/05 10:28:24 WARN yarn.Client: Neither spark.yarn.jars nor spark.yarn.archive is set, falling back to uploading libraries under SPARK_HOME.
+17/07/06 14:48:11 WARN yarn.Client: Neither spark.yarn.jars nor spark.yarn.archive is set, falling back to uploading libraries under SPARK_HOME.
 weixin_captcha_break.py:89: UserWarning: Update your `Model` call to the Keras 2 API: `Model(outputs=[<tf.Tenso..., inputs=Tensor("in...)`
   model = Model(input=input_tensor, outputs=x)
 author: justry
-Wed Jul  5 10:28:14 2017
+Thu Jul  6 14:48:03 2017
 5000
 8000
 ____________________________________________________________________________________________________
@@ -68,16 +68,4 @@ ________________________________________________________________________________
 c2 (Dense)                       (None, 52)            26676       dropout_1[0][0]                  
 ____________________________________________________________________________________________________
 c3 (Dense)                       (None, 52)            26676       dropout_1[0][0]                  
-____________________________________________________________________________________________________
-c4 (Dense)                       (None, 52)            26676       dropout_1[0][0]                  
-====================================================================================================
-Total params: 2,065,904
-Trainable params: 2,065,904
-Non-trainable params: 0
-____________________________________________________________________________________________________
-------------------------test0----------------------------
-Wed Jul  5 10:28:41 2017
-------------------------test1----------------------------
-Wed Jul  5 10:28:44 2017
-------------------------test2----------------------------
-Wed Jul  5 13:32:28 2017
+______
