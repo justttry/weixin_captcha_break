@@ -32,21 +32,18 @@ background = {'blue': (246, 246, 246),
 
 def getTextColor(color):
     if color == 'green':
-        blue = random.randint(57, 95)
-        green = blue+40+random.randint(-10, 10)
-        red = blue-70+random.randint(-10, 10)
-        return  red if red > 0 else 0, green, blue
+        red = random.randint(0, 50)
+        blue = red + 60 + random.randint(-30, 30)
+        green = blue + 50 + random.randint(-30, 30)
     elif color == 'blue':
-        green = random.randint(30, 50)
-        blue = green+170+random.randint(-10, 10)
-        red = green-35+random.randint(-10, 10)
-        return red if red > 0 else 0, green, blue if blue < 255 else 255
+        red = random.randint(0, 50)
+        green = red + 50 + random.randint(-30, 30)
+        blue = green + 170 + random.randint(-50, 50)
     else:
-        blue = random.randint(30, 45)
-        green = blue+70+random.randint(-10, 10)
-        red = blue+125+random.randint(-10, 10)
-        return red, green, blue
-        
+        blue = random.randint(0, 50)
+        green = blue+70+random.randint(-30, 30)
+        red = blue+125+random.randint(-30, 30)
+    return blue, green, red
 
 def decode(y):
     y = np.argmax(np.array(y), axis=2)[:,0]
@@ -200,7 +197,7 @@ def ctc_captcha_generator(width,
                   conv_shape,
                   batch_size=64,
                   set_cha=chars,
-                  font_dir='/sina_captcha_fonts'
+                  font_dir='/home/ubuntu/sina_captcha_fonts'
                   ):
     size_im = (width, height)
     overlaps = [0.0, 0.3, 0.6]
@@ -255,7 +252,9 @@ def captcha_save():
             pic_names = map(lambda x: x.split('.')[0], os.listdir(dir_path))
             #pic_names.remove('label')
             pic_id = max(map(int, pic_names))+1 # 找到所有图片的最大标号，方便命名
-    
+        
+        b, g, r = cv2.split(x)
+        x = cv2.merge([r, g, b])
         img_name = str(pic_id) + '.jpg'
         img_path = dir_path + img_name
         label_path = dir_path + 'label.txt'
