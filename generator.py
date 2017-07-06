@@ -5,6 +5,7 @@ from itertools import product
 from PIL import Image, ImageDraw, ImageFont
 import cv2
 import numpy as np
+import unittest
 
 """
 基本：
@@ -63,6 +64,82 @@ def sin(x, height):
 def randRGB():
     return (random.randint(40, 110), random.randint(40, 110), random.randint(40, 110))
 
+#----------------------------------------------------------------------
+def movedown(img, c):
+    """"""
+    i, j, _ = img.shape
+    a = img[:, :c]
+    b = img[:, c:]
+    d = np.array([[[0, 0, 0, 0]] * (j - c)])
+    e = np.concatenate([d, b])[:-1]
+    return np.concatenate([a, e], axis=1)
+
+#----------------------------------------------------------------------
+def moveup(img, c):
+    """"""
+    i, j, _ = img.shape
+    a = img[:, :c]
+    b = img[:, c:]
+    d = np.array([[[0, 0, 0, 0]] * (j - c)])
+    e = np.concatenate([b, d])[1:]
+    return np.concatenate([a, e], axis=1)
+
+#----------------------------------------------------------------------
+def moveleft(img, c):
+    """"""
+    i, j, _ = img.shape
+    a = img[:c]
+    b = img[c:]
+    d = np.array([[[0, 0, 0, 0]]] * (i - c))
+    e = np.concatenate([b, d], axis=1)[:, 1:]
+    return np.concatenate([a, e])
+
+#----------------------------------------------------------------------
+def moveright(img, c):
+    """"""
+    i, j, _ = img.shape
+    a = img[:c]
+    b = img[c:]
+    d = np.array([[[0, 0, 0, 0]]] * (i - c))
+    e = np.concatenate([d, b], axis=1)[:, :-1]
+    return np.concatenate([a, e])
+
+#----------------------------------------------------------------------
+def move(im):
+    """"""
+    img = np.asarray(im)
+    img = movemat(img)
+    return Image.fromarray(img.astype('uint8'))
+
+def movemat(img):
+    rows, cols, _ = img.shape
+    for i in range(1, rows):
+        direction = random.choice([-1, 0, 0, 1])
+        if direction == 1:
+            img = np.concatenate([img, np.array([[[0, 0, 0, 0]]]*rows)], axis=1)
+            img = moveright(img, i)
+            if not any([any(j) for j in img[:, -1]]):
+                img = img[:, :-1]
+        elif direction == -1:
+            img = np.concatenate([np.array([[[0, 0, 0, 0]]]*rows), img], axis=1)
+            img = moveleft(img, i)
+            if not any([any(j) for j in img[:, 0]]):
+                img = img[:, 1:]
+    rows, cols, _ = img.shape    
+    for i in range(1, cols):
+        direction = random.choice([-1, 0, 0, 1])
+        if direction == 1:
+            img = np.concatenate([np.array([[[0, 0, 0, 0]]*cols]), img])
+            img = moveup(img, i)
+            if not any([any(j) for j in img[0]]):
+                img = img[1:]
+        elif direction == -1:
+            img = np.concatenate([img, np.array([[[0, 0, 0, 0]]*cols])])
+            img = movedown(img, i)
+            if not any([any(j) for j in img[-1]]):
+                img = img[:-1]
+    return img
+
 def cha_draw(cha, text_color, font, rotate, size_cha, max_angle=15):
     im = Image.new(mode='RGBA', size=(size_cha*2, size_cha*2))
     drawer = ImageDraw.Draw(im) 
@@ -72,6 +149,7 @@ def cha_draw(cha, text_color, font, rotate, size_cha, max_angle=15):
         angle = random.randint(-max_angle, max_angle)
         im = im.rotate(angle, Image.BILINEAR, expand=1)
     im = im.crop(im.getbbox())
+    im = move(im)
     return im
 
 def captcha_draw(size_im, nb_cha, set_cha, colors, fonts=None, overlap=0.01, 
@@ -288,9 +366,135 @@ def ctc_captcha_save():
         print img_path
         img = Image.fromarray(np.uint8(x))
         img.save(img_path)            
+        
+########################################################################
+class GeneratorTest(unittest.TestCase):
+    """"""
+    
+    #----------------------------------------------------------------------
+    def setUp(self):
+        """Constructor"""
+        self.a = np.zeros((4, 3, 3))
+        for i in range(3):
+            self.a[i, i, i] = i+1
+    
+    #----------------------------------------------------------------------
+    def test_movedown(self):
+        """"""
+        a = np.array([[[1, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 2, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 3]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
+        b = np.array([[[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[1, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 2, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 3]]])
+        c = np.array([[[1, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 2, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 3]]])
+        d = np.array([[[1, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 2, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 3]]])
+        self.assertListEqual(self.a.tolist(), a.tolist())
+        self.assertListEqual(movedown(self.a, 0).tolist(), b.tolist())
+        self.assertListEqual(movedown(self.a, 1).tolist(), c.tolist())
+        self.assertListEqual(movedown(self.a, 2).tolist(), d.tolist())
+    
+    #----------------------------------------------------------------------
+    def test_moveup(self):
+        """"""
+        a = np.array([[[1, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 2, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 3]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
+        b = np.array([[[0, 0, 0], [0, 2, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 3]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
+        c = np.array([[[1, 0, 0], [0, 2, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 3]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
+        d = np.array([[[1, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 2, 0], [0, 0, 3]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
+        self.assertListEqual(self.a.tolist(), a.tolist())
+        self.assertListEqual(moveup(self.a, 0).tolist(), b.tolist())
+        self.assertListEqual(moveup(self.a, 1).tolist(), c.tolist())
+        self.assertListEqual(moveup(self.a, 2).tolist(), d.tolist())
+        
+    #----------------------------------------------------------------------
+    def test_moveleft(self):
+        """"""
+        a = np.array([[[1, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 2, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 3]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
+        b = np.array([[[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 2, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 3], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
+        c = np.array([[[1, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 2, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 3], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
+        d = np.array([[[1, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 2, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 3], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
+        e = np.array([[[1, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 2, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 3]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
+        self.assertListEqual(self.a.tolist(), a.tolist())
+        self.assertListEqual(moveleft(self.a, 0).tolist(), b.tolist())
+        self.assertListEqual(moveleft(self.a, 1).tolist(), c.tolist())
+        self.assertListEqual(moveleft(self.a, 2).tolist(), d.tolist())
+        self.assertListEqual(moveleft(self.a, 3).tolist(), e.tolist())
+        
+    #----------------------------------------------------------------------
+    def test_moveright(self):
+        """"""
+        a = np.array([[[1, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 2, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 3]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
+        b = np.array([[[0, 0, 0], [1, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 2, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
+        c = np.array([[[1, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 2, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
+        d = np.array([[[1, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 2, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
+        e = np.array([[[1, 0, 0], [0, 0, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 2, 0], [0, 0, 0]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 3]],
+                      [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
+        self.assertListEqual(self.a.tolist(), a.tolist())
+        self.assertListEqual(moveright(self.a, 0).tolist(), b.tolist())
+        self.assertListEqual(moveright(self.a, 1).tolist(), c.tolist())
+        self.assertListEqual(moveright(self.a, 2).tolist(), d.tolist())
+        self.assertListEqual(moveright(self.a, 3).tolist(), e.tolist())
+        
+    
+#----------------------------------------------------------------------
+def suite():
+    """"""
+    suite = unittest.TestSuite()
+    suite.addTest(GeneratorTest('test_movedown'))
+    suite.addTest(GeneratorTest('test_moveup'))
+    suite.addTest(GeneratorTest('test_moveleft'))
+    suite.addTest(GeneratorTest('test_moveright'))
+    return suite
 
 if __name__ == "__main__":
-    # test()
-    #captcha_generator(140, 44)
-    for _ in range(100):
-        captcha_save()
+    #unittest.main(defaultTest='suite')
+    captcha_save()
