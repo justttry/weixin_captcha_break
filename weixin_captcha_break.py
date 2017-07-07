@@ -39,7 +39,7 @@ from keras.objectives import custom_loss, ctc_lambda_func
 application_name = "weixin captcha break"
 master = 'yarn'
 deploymode = 'client'
-num_executors = 3
+num_executors = 5
 num_cores = 1
 num_workers = num_executors * num_cores
 optimizer = 'adagrad'
@@ -95,34 +95,40 @@ model.save('/home/ubuntu/models/weixin_rawmodel.h5')
 from distkeras.job_deployment import graph
 graph.append(tf.get_default_graph())
 
+import time
+print '------------------------test0----------------------------'
+print time.ctime()
+
 trainer = AEASGD(keras_model=model, worker_optimizer=optimizer, loss=loss, num_workers=num_workers, 
                  batch_size=32, features_col="features_normalized", label_col="newlabel", num_epoch=1,
                  communication_window=32, rho=5.0, learning_rate=0.1, master_port=master_port)
+
+print '------------------------test1----------------------------'
+print time.ctime()
 
 # 建立调度任务
 job = Job("3Q20LA3MXU3N8Y9NVJ7A1T5WNHL2IWQSNNJ5V9I5P7MRJ8LSC33EN2DT3EWYLCJA",
           "user1",
           "data_path",
-          3,
+          5,
           1,
           trainer,
           3000,
-          20)
+          12)
 
-import time
-print '------------------------test0----------------------------'
+print '------------------------test2----------------------------'
 print time.ctime()
 
 # 启动任务
 job.send_with_files('http://13.124.171.155:%d'%send_port, ['generator.py'])
 
-print '------------------------test1----------------------------'
+print '------------------------test3----------------------------'
 print time.ctime()
 
 # 等待结束
 job.wait_completion()
 
-print '------------------------test2----------------------------'
+print '------------------------test4----------------------------'
 print time.ctime()
 
 # 保存模型

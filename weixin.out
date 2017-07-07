@@ -1,3 +1,4 @@
+nohup: ignoring input
 Using TensorFlow backend.
 I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcublas.so.8.0 locally
 I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcudnn.so.5 locally
@@ -21,11 +22,11 @@ I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:193] kernel reported versi
 I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:300] kernel version seems to match DSO: 375.39.0
 Setting default log level to "WARN".
 To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
-17/07/06 14:48:11 WARN yarn.Client: Neither spark.yarn.jars nor spark.yarn.archive is set, falling back to uploading libraries under SPARK_HOME.
+17/07/07 03:02:51 WARN yarn.Client: Neither spark.yarn.jars nor spark.yarn.archive is set, falling back to uploading libraries under SPARK_HOME.
 weixin_captcha_break.py:89: UserWarning: Update your `Model` call to the Keras 2 API: `Model(outputs=[<tf.Tenso..., inputs=Tensor("in...)`
   model = Model(input=input_tensor, outputs=x)
 author: justry
-Thu Jul  6 14:48:03 2017
+Fri Jul  7 03:02:42 2017
 5000
 8000
 ____________________________________________________________________________________________________
