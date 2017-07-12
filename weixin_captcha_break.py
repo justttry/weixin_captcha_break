@@ -39,7 +39,7 @@ from keras.objectives import custom_loss, ctc_lambda_func
 application_name = "weixin captcha break"
 master = 'yarn'
 deploymode = 'client'
-num_executors = 5
+num_executors = 3
 num_cores = 1
 num_workers = num_executors * num_cores
 optimizer = 'adagrad'
@@ -110,7 +110,7 @@ print time.ctime()
 job = Job("3Q20LA3MXU3N8Y9NVJ7A1T5WNHL2IWQSNNJ5V9I5P7MRJ8LSC33EN2DT3EWYLCJA",
           "user1",
           "data_path",
-          5,
+          3,
           1,
           trainer,
           3000,
@@ -120,7 +120,7 @@ print '------------------------test2----------------------------'
 print time.ctime()
 
 # 启动任务
-job.send_with_files('http://13.124.171.155:%d'%send_port, ['generator.py'])
+job.send_with_files('http://52.79.223.0:%d'%send_port, ['generator.py'])
 
 print '------------------------test3----------------------------'
 print time.ctime()
@@ -133,7 +133,7 @@ print time.ctime()
 
 # 保存模型
 trained_model = job.get_trained_model()
-trained_model.save('weixin_trained_model.h5')
+trained_model.save('weixin_trained_model_v2.h5')
 
 # 关闭sc
 sc.stop()
