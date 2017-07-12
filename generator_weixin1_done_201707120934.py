@@ -149,10 +149,10 @@ def cha_draw(cha, text_color, font, rotate, size_cha, max_angle=15):
         angle = random.randint(-max_angle, max_angle)
         im = im.rotate(angle, Image.BILINEAR, expand=1)
     im = im.crop(im.getbbox())
-    #im = move(im)
+    im = move(im)
     return im
 
-def captcha_draw(size_im, nb_cha, set_cha, colors, char_fonts=None, noise_fonts=None, overlap=0.01, 
+def captcha_draw(size_im, nb_cha, set_cha, colors, fonts=None, overlap=0.01, 
         rd_bg_color=False, rd_text_color=False, rd_text_pos=False, rd_text_size=False,
         rotate=False, noise=None, dir_path=''):
     """
@@ -199,33 +199,16 @@ def captcha_draw(size_im, nb_cha, set_cha, colors, char_fonts=None, noise_fonts=
         overlap_i = random.choice([0, overlap])
         # font = ImageFont.truetype("arial.ttf", size_cha)
         cha = random.choice(set_cha)
-        font = random.choice(char_fonts)
-        font = ImageFont.truetype(font, size_cha-10)
+        font = random.choice(fonts)
+        font = ImageFont.truetype(font, size_cha-5)
         contents.append(cha) 
-        im_cha = cha_draw(cha, text_color, font, rotate, size_cha-10)
+        im_cha = cha_draw(cha, text_color, font, rotate, size_cha-5)
         im_cha_x, im_cha_y = im_cha.size
         im.paste(im_cha, 
                  (first_x_point, dery++random.randint(-2, 2)), 
                  im_cha) # 字符左上角位置
         first_x_point += im_cha_x - int(overlap_i*width_cha) if im_cha_x < 25 else \
             derx - int(overlap_i*width_cha)
-    
-    first_x_point = random.randint(0, 10)        
-    
-    for i in range(2):
-        overlap_i = random.choice([0, overlap])
-        # font = ImageFont.truetype("arial.ttf", size_cha)
-        cha = random.choice(set_cha)
-        font = random.choice(noise_fonts)
-        if 'ZINGDING.TTF' not in font:
-            cha = cha.lower()
-        font = ImageFont.truetype(font, size_cha-5)
-        im_cha = cha_draw(cha, text_color, font, rotate, size_cha-5)
-        im_cha_x, im_cha_y = im_cha.size
-        im.paste(im_cha, 
-                 (first_x_point, dery++random.randint(-2, 2)), 
-                 im_cha) # 字符左上角位置
-        first_x_point = width_im - first_x_point + random.randint(-40, -30) 
         
     if 'sin' in noise:
         sincnt = random.randint(1, 2)
@@ -244,26 +227,21 @@ def captcha_generator(width,
                       height, 
                       batch_size=64,
                       set_cha=chars,
-                      font_dir='/sina_captcha_fonts2'
+                      font_dir='/home/ubuntu/sina_captcha_fonts'
                       ):
     size_im = (width, height)
     rd_text_poss = [True, True]
     rd_text_sizes = [True, True]
     rd_text_colors = [True, True] # false 代表字体颜色全一致，但都是黑色
     rd_bg_color = True 
-    noises = [['line', 'point']]
+    noises = [['line', 'point', 'sin']]
     rotates = [True, True]
     nb_chas = [4, 6]
-    noisefonts = ['ZINGDING.TTF', 'Traditional_Floral_Design.ttf', 'MYTHOLOG.TTF']
-    char_font_paths = []
-    noise_font_paths = []
+    font_paths = []
     for dirpath, dirnames, filenames in os.walk(font_dir):
         for filename in filenames:
             filepath = dirpath + os.sep + filename
-            if filename in noisefonts:
-                noise_font_paths.append(filepath)
-            else:
-                char_font_paths.append(filepath)
+            font_paths.append(filepath)
     
     rd_color = ['orange', 'blue', 'green']
     n_len = 4
@@ -284,8 +262,7 @@ def captcha_generator(width,
             im, contents = captcha_draw(size_im=size_im, nb_cha=nb_cha, set_cha=set_cha, 
                                         overlap=overlap, rd_text_pos=rd_text_pos, rd_text_size=True, 
                                         rd_text_color=rd_text_color, rd_bg_color=rd_bg_color, noise=noise, 
-                                        rotate=rotate, dir_path=dir_path, char_fonts=char_font_paths,
-                                        noise_fonts=noise_font_paths, colors=rd_color)
+                                        rotate=rotate, dir_path=dir_path, fonts=font_paths, colors=rd_color)
             contents = ''.join(contents)
             X[i] = im
             for j, ch in enumerate(contents):
@@ -298,7 +275,7 @@ def ctc_captcha_generator(width,
                   conv_shape,
                   batch_size=64,
                   set_cha=chars,
-                  font_dir='/sina_captcha_fonts2'
+                  font_dir='/home/ubuntu/sina_captcha_fonts'
                   ):
     size_im = (width, height)
     overlaps = [0.0, 0.3, 0.6]
@@ -306,7 +283,7 @@ def ctc_captcha_generator(width,
     rd_text_sizes = [True, True]
     rd_text_colors = [True, True] # false 代表字体颜色全一致，但都是黑色
     rd_bg_color = True 
-    noises = [['line', 'point']]
+    noises = [['line', 'point', 'sin']]
     rotates = [True, True]
     nb_chas = [4, 6]
     font_paths = []
