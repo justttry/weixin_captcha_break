@@ -6,6 +6,7 @@ from PIL import Image, ImageDraw, ImageFont
 import cv2
 import numpy as np
 import unittest
+import matplotlib.pyplot as plt
 
 """
 基本：
@@ -140,7 +141,7 @@ def movemat(img):
                 img = img[:-1]
     return img
 
-def cha_draw(cha, text_color, font, rotate, size_cha, max_angle=15):
+def cha_draw(cha, text_color, font, font_mask, rotate, size_cha, max_angle=15):
     im = Image.new(mode='RGBA', size=(size_cha*2, size_cha*2))
     drawer = ImageDraw.Draw(im) 
     drawer.text(xy=(0, 0), text=cha, fill=text_color, font=font) #text 内容，fill 颜色， font 字体（包括大小）
@@ -149,8 +150,16 @@ def cha_draw(cha, text_color, font, rotate, size_cha, max_angle=15):
         angle = random.randint(-max_angle, max_angle)
         im = im.rotate(angle, Image.BILINEAR, expand=1)
     im = im.crop(im.getbbox())
+    
+    im_mask = Image.new(mode='RGBA', size=(size_cha*2, size_cha*2))
+    drawer_mask = ImageDraw.Draw(im_mask) 
+    drawer_mask.text(xy=(0, 0), text=cha, fill=text_color, font=font_mask) #text 内容，fill 颜色， font 字体（包括大小）
+    if rotate:
+        #max_angle = 45 # to be tuned
+        im_mask = im_mask.rotate(angle, Image.BILINEAR, expand=1)
+    im_mask = im_mask.crop(im_mask.getbbox())
     #im = move(im)
-    return im
+    return im, im_mask
 
 def captcha_draw(size_im, nb_cha, set_cha, colors, char_fonts=None, noise_fonts=None, overlap=0.01, 
         rd_bg_color=False, rd_text_color=False, rd_text_pos=False, rd_text_size=False,
@@ -187,8 +196,11 @@ def captcha_draw(size_im, nb_cha, set_cha, colors, char_fonts=None, noise_fonts=
     color = random.choice(colors)
     bg_color = background[color] # 背景色
     im = Image.new(mode='RGB', size=size_im, color=bg_color) # color 背景颜色，size 图片大小
+    im_mask = Image.new(mode='RGBA', size=size_im, color=(0, 0, 0, 0)) # im mask
+    im_noise = Image.new(mode='RGB', size=size_im, color=bg_color)
 
     drawer = ImageDraw.Draw(im)
+    drawer_mask = ImageDraw.Draw(im_mask)
     contents = []  
     
     text_color = getTextColor(color)
@@ -200,13 +212,19 @@ def captcha_draw(size_im, nb_cha, set_cha, colors, char_fonts=None, noise_fonts=
         # font = ImageFont.truetype("arial.ttf", size_cha)
         cha = random.choice(set_cha)
         font = random.choice(char_fonts)
+        font_mask = font[:-4] + '_mask' + font[-4:]
         font = ImageFont.truetype(font, size_cha-10)
+        font_mask = ImageFont.truetype(font_mask, size_cha-10)
         contents.append(cha) 
-        im_cha = cha_draw(cha, text_color, font, rotate, size_cha-10)
+        im_cha, im_cha_mask = cha_draw(cha, text_color, font, font_mask, rotate, size_cha-10)
         im_cha_x, im_cha_y = im_cha.size
+        position = (first_x_point, dery++random.randint(-2, 2))
         im.paste(im_cha, 
-                 (first_x_point, dery++random.randint(-2, 2)), 
+                 position, 
                  im_cha) # 字符左上角位置
+        im_mask.paste(im_cha_mask, 
+                 position, 
+                 im_cha_mask) # 字符左上角位置
         first_x_point += im_cha_x - int(overlap_i*width_cha) if im_cha_x < 25 else \
             derx - int(overlap_i*width_cha)
     
@@ -220,11 +238,11 @@ def captcha_draw(size_im, nb_cha, set_cha, colors, char_fonts=None, noise_fonts=
         if 'ZINGDING.TTF' not in font:
             cha = cha.lower()
         font = ImageFont.truetype(font, size_cha-5)
-        im_cha = cha_draw(cha, text_color, font, rotate, size_cha-5)
+        im_cha, im_cha_mask = cha_draw(cha, text_color, font, font, rotate, size_cha-5)
         im_cha_x, im_cha_y = im_cha.size
-        im.paste(im_cha, 
-                 (first_x_point, dery++random.randint(-2, 2)), 
-                 im_cha) # 字符左上角位置
+        im_noise.paste(im_cha, 
+                       (first_x_point, dery++random.randint(-2, 2)), 
+                       im_cha) # 字符左上角位置
         first_x_point = width_im - first_x_point + random.randint(-40, -30) 
         
     if 'sin' in noise:
@@ -237,8 +255,10 @@ def captcha_draw(size_im, nb_cha, set_cha, colors, char_fonts=None, noise_fonts=
             for k in range(4):
                 for i, j in zip(x, y+k):
                     drawer.point(xy=(i, j), fill=sinfill)
+    
+    im_noise.paste(im, (0, 0), im_mask)
             
-    return np.asarray(im), contents
+    return np.asarray(im_noise), contents
 
 def captcha_generator(width, 
                       height, 
@@ -262,7 +282,7 @@ def captcha_generator(width,
             filepath = dirpath + os.sep + filename
             if filename in noisefonts:
                 noise_font_paths.append(filepath)
-            else:
+            elif 'mask' not in filename:
                 char_font_paths.append(filepath)
     
     rd_color = ['orange', 'blue', 'green']
