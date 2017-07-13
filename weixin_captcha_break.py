@@ -120,7 +120,7 @@ print '------------------------test2----------------------------'
 print time.ctime()
 
 # 启动任务
-job.send_with_files('http://52.79.223.0:%d'%send_port, ['generator.py'])
+job.send_with_files('http://52.78.148.240:%d'%send_port, ['generator.py'])
 
 print '------------------------test3----------------------------'
 print time.ctime()
@@ -133,7 +133,7 @@ print time.ctime()
 
 # 保存模型
 trained_model = job.get_trained_model()
-trained_model.save('weixin_trained_model_v2.h5')
+trained_model.save('weixin_trained_model_v3.h5')
 
 # 关闭sc
 sc.stop()

@@ -264,7 +264,7 @@ def captcha_generator(width,
                       height, 
                       batch_size=64,
                       set_cha=chars,
-                      font_dir='/sina_captcha_fonts2'
+                      font_dir='/home/ubuntu/sina_captcha_fonts2'
                       ):
     size_im = (width, height)
     rd_text_poss = [True, True]
@@ -318,7 +318,7 @@ def ctc_captcha_generator(width,
                   conv_shape,
                   batch_size=64,
                   set_cha=chars,
-                  font_dir='/sina_captcha_fonts2'
+                  font_dir='/home/ubuntu/sina_captcha_fonts2'
                   ):
     size_im = (width, height)
     overlaps = [0.0, 0.3, 0.6]

@@ -12,8 +12,8 @@ W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn'
 W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX2 instructions, but these are available on your machine and could speed up CPU computations.
 W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use FMA instructions, but these are available on your machine and could speed up CPU computations.
 E tensorflow/stream_executor/cuda/cuda_driver.cc:509] failed call to cuInit: CUDA_ERROR_NO_DEVICE
-I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:158] retrieving CUDA diagnostic information for host: ip-172-31-25-29
-I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:165] hostname: ip-172-31-25-29
+I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:158] retrieving CUDA diagnostic information for host: master
+I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:165] hostname: master
 I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:189] libcuda reported version is: 375.39.0
 I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:363] driver version file contents: """NVRM version: NVIDIA UNIX x86_64 Kernel Module  375.39  Tue Jan 31 20:47:00 PST 2017
 GCC version:  gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.4) 
@@ -22,11 +22,11 @@ I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:193] kernel reported versi
 I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:300] kernel version seems to match DSO: 375.39.0
 Setting default log level to "WARN".
 To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
-17/07/12 04:06:03 WARN yarn.Client: Neither spark.yarn.jars nor spark.yarn.archive is set, falling back to uploading libraries under SPARK_HOME.
+17/07/13 10:20:43 WARN yarn.Client: Neither spark.yarn.jars nor spark.yarn.archive is set, falling back to uploading libraries under SPARK_HOME.
 weixin_captcha_break.py:89: UserWarning: Update your `Model` call to the Keras 2 API: `Model(outputs=[<tf.Tenso..., inputs=Tensor("in...)`
   model = Model(input=input_tensor, outputs=x)
 author: justry
-Wed Jul 12 04:05:53 2017
+Thu Jul 13 10:20:35 2017
 5000
 8000
 ____________________________________________________________________________________________________
@@ -77,12 +77,12 @@ Trainable params: 2,065,904
 Non-trainable params: 0
 ____________________________________________________________________________________________________
 ------------------------test0----------------------------
-Wed Jul 12 04:06:34 2017
+Thu Jul 13 10:21:00 2017
 ------------------------test1----------------------------
-Wed Jul 12 04:06:34 2017
+Thu Jul 13 10:21:00 2017
 ------------------------test2----------------------------
-Wed Jul 12 04:06:34 2017
+Thu Jul 13 10:21:00 2017
 ------------------------test3----------------------------
-Wed Jul 12 04:06:38 2017
+Thu Jul 13 10:21:04 2017
 ------------------------test4----------------------------
-Wed Jul 12 05:52:48 2017
+Thu Jul 13 13:57:42 2017
